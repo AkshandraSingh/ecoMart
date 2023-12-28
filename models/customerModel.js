@@ -11,7 +11,7 @@ const customerModel = new mongoose.Schema({
         unique: true,
     },
     customerPhone: {
-        type: Number,
+        type: String,
         required: true,
         unique: true,
     },
