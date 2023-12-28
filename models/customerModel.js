@@ -1,10 +1,9 @@
 const mongoose = require('mongoose')
 
-const userModel = mongoose.Schema({
+const customerModel = new mongoose.Schema({
     customerName: {
         type: String,
         required: true,
-        unique: true,
     },
     customerEmail: {
         type: String,
@@ -14,9 +13,14 @@ const userModel = mongoose.Schema({
     customerPhone: {
         type: Number,
         required: true,
+        unique: true,
     },
     customerPassword: {
         type: String,
+        required: true,
+    },
+    customerGender: {
+        type: String, // Male or Female
         required: true,
     },
     userRole: {
@@ -27,7 +31,7 @@ const userModel = mongoose.Schema({
         type: [],
         default: [],
     },
-    userProfilePic: {
+    customerProfilePic: {
         type: String,
         required: true,
     },
@@ -48,6 +52,6 @@ const userModel = mongoose.Schema({
     }
 })
 
-userModel.set('timestamps', true)
+customerModel.set('timestamps', true)
 
-module.exports = userModel.model('user', userModel)
+module.exports = mongoose.model('customer', customerModel)

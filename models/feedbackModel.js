@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const feedbackModel = mongoose.Schema({
+const feedbackModel = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
