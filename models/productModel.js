@@ -21,9 +21,9 @@ const productModel = new mongoose.Schema({
         type: Number,
         default: 0,
     },
-    productImageUrl: {
+    productImage: {
         type: String,
-        default: 'default-image-url.jpg',
+        default: 'defaultProductImage.png',
     },
     isActive: {
         type: Boolean,

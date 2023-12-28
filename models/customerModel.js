@@ -27,6 +27,10 @@ const userModel = mongoose.Schema({
         type: [],
         default: [],
     },
+    userProfilePic: {
+        type: String,
+        required: true,
+    },
     cart: [{
         productId: {
             type: mongoose.Schema.Types.ObjectId,
