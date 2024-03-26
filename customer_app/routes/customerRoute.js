@@ -8,5 +8,6 @@ customerRouter.post('/signupCustomer', customerController.signupCustomer)
 customerRouter.post('/loginCustomer', customerController.loginCustomer)
 customerRouter.post('/forgetPassword', customerController.forgetPassword)
 customerRouter.post('/resetPassword/:userId/:token', customerController.resetPassword)
+customerRouter.post('/setNewPassword/:userId', customerController.setNewPassword)
 
 module.exports = customerRouter

@@ -155,5 +155,56 @@ module.exports = {
                 error: error.message,
             })
         }
-    }
+    },
+
+    setNewPassword: async (req, res) => {
+        try {
+            let isPasswordExist = false;
+            const { userId } = req.params;
+            const { oldPassword, newPassword, confirmPassword } = req.body;
+            const customerData = await customerModel.findById(userId);
+            const checkPassword = await bcrypt.compare(oldPassword, customerData.customerPassword);
+            if (checkPassword) {
+                if (confirmPassword === newPassword) {
+                    for (const usedPassword of customerData.usedPasswords) {
+                        if (await bcrypt.compare(newPassword, usedPassword)) {
+                            isPasswordExist = true;
+                            break;
+                        }
+                    }
+                    if (isPasswordExist) {
+                        return res.status(401).json({
+                            success: false,
+                            message: "This password you already used in the past",
+                        });
+                    } else {
+                        const bcryptPassword = await bcrypt.hash(newPassword, 10);
+                        customerData.customerPassword = bcryptPassword;
+                        customerData.usedPasswords.push(bcryptPassword);
+                        await customerData.save();
+                        res.status(200).json({
+                            success: true,
+                            message: "Your Password is updated!",
+                        });
+                    }
+                } else {
+                    res.status(401).json({
+                        success: false,
+                        message: "New password and Confirm password do not match",
+                    });
+                }
+            } else {
+                res.status(401).json({
+                    success: false,
+                    message: "Old password is incorrect",
+                });
+            }
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: "Error",
+                error: error.message,
+            });
+        }
+    },
 }
