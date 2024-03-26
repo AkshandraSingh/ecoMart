@@ -5,6 +5,7 @@ const customerModel = require('../../models/customerModel')
 const emailService = require('../../services/emailService')
 
 module.exports = {
+    //? Signup API For Customer 👀
     signupCustomer: async (req, res) => {
         try {
             const customerData = new customerModel(req.body)
@@ -40,6 +41,7 @@ module.exports = {
             })
         }
     },
+    //? Login API For Customer 💫
     loginCustomer: async (req, res) => {
         try {
             const { customerAccount, customerPassword } = req.body
@@ -78,6 +80,7 @@ module.exports = {
             })
         }
     },
+    //? Forget Password API For Customer 🎯
     forgetPassword: async (req, res) => {
         try {
             const { customerEmail } = req.body
@@ -107,6 +110,7 @@ module.exports = {
             })
         }
     },
+    //? Reset Password API For Customer 🧠
     resetPassword: async (req, res) => {
         let isPasswordExist = false
         try {
@@ -156,7 +160,7 @@ module.exports = {
             })
         }
     },
-
+    //? Set New Password API For Customer 🦕
     setNewPassword: async (req, res) => {
         try {
             let isPasswordExist = false;
@@ -205,6 +209,23 @@ module.exports = {
                 message: "Error",
                 error: error.message,
             });
+        }
+    },
+    //? View Profile API For Customer 🆒
+    viewProfile: async (req, res) => {
+        try {
+            const { userId } = req.params
+            const customerData = await customerModel.findById(userId).select("customerName customerGender userRole customerProfilePic")
+            res.status(200).json({
+                success: true,
+                message: customerData,
+            })
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message,
+            })
         }
     },
 }
