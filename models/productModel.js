@@ -23,7 +23,7 @@ const productModel = new mongoose.Schema({
     },
     productImage: {
         type: String,
-        default: 'defaultProductImage.png',
+        default: 'D:/Node Projects/EcoMart/uploads/productsImages/defaultProductImage.png',
     },
     isActive: {
         type: Boolean,

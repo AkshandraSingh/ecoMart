@@ -18,8 +18,8 @@ module.exports = {
                 const bcryptPassword = await bcrypt.hash(req.body.customerPassword, 10)
                 customerData.customerPassword = bcryptPassword
                 customerData.customerProfilePic = (customerData.customerGender === 'male') ?
-                    'F:/Node Projects/EcoMart/images/avatars/maleAvatar.png' :
-                    'F:/Node Projects/EcoMart/images/avatars/femaleAvatar.jpg';
+                    'F:/Node Projects/EcoMart/uploads/avatars/maleAvatar.png' :
+                    'F:/Node Projects/EcoMart/uploads/avatars/femaleAvatar.jpg';
                 customerData.usedPasswords.push(bcryptPassword)
                 await customerData.save()
                 res.status(201).send({
