@@ -249,4 +249,24 @@ module.exports = {
             })
         }
     },
+    //? Change Profile Pic API For Customer 💀
+    changeProfilePic: async (req, res) => {
+        try {
+            const { userId } = req.params
+            const customerProfilePic = `/upload/profilePics/${req.file.filename}`
+            const customerData = await customerModel.findById(userId)
+            customerData.customerProfilePic = customerProfilePic
+            await customerData.save()
+            res.status(200).json({
+                success: true,
+                message: "Successfully Updated Profile Pic!",
+            })
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message,
+            })
+        }
+    },
 }

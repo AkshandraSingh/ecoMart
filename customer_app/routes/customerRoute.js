@@ -1,6 +1,7 @@
 const express = require('express')
 
 const customerController = require('../controllers/customerController')
+const customerImageStorage = require('../../middleware/customerImageStorage')
 
 const customerRouter = express.Router()
 
@@ -10,6 +11,7 @@ customerRouter.post('/forgetPassword', customerController.forgetPassword)
 customerRouter.post('/resetPassword/:userId/:token', customerController.resetPassword)
 customerRouter.post('/setNewPassword/:userId', customerController.setNewPassword)
 customerRouter.post('/updateName/:userId', customerController.updateName)
+customerRouter.post('/changeProfilePic/:userId', customerImageStorage.upload.single('customerProfilePic'), customerController.changeProfilePic)
 customerRouter.get('/viewProfile/:userId', customerController.viewProfile)
 
 module.exports = customerRouter
