@@ -107,4 +107,53 @@ module.exports = {
             })
         }
     },
+    resetPassword: async (req, res) => {
+        let isPasswordExist = false
+        try {
+            const { newPassword, confirmPassword } = req.body
+            const { userId, token } = req.params
+            const isTokenCorrect = jwt.verify(token, process.env.SECRET_KEY);
+            if (isTokenCorrect) {
+                if (newPassword === confirmPassword) {
+                    const customerData = await customerModel.findById(userId)
+                    for (const oldPassword of customerData.usedPasswords) {
+                        if (await bcrypt.compare(newPassword, oldPassword)) {
+                            isPasswordExist = true;
+                            break;
+                        }
+                    }
+                    if (isPasswordExist) {
+                        return res.status(401).json({
+                            success: false,
+                            message: "Don't use old passwords, try another password",
+                        });
+                    }
+                    const bcryptPassword = await bcrypt.hash(newPassword, 10)
+                    customerData.customerPassword = bcryptPassword
+                    customerData.usedPasswords.push(bcryptPassword)
+                    await customerData.save();
+                    res.status(201).json({
+                        success: true,
+                        message: "Password Updated",
+                    });
+                } else {
+                    res.status(401).send({
+                        success: false,
+                        message: "New password or confirm password is incorrect"
+                    })
+                }
+            } else {
+                res.status(401).send({
+                    success: false,
+                    message: "Token is incorrect or expire"
+                })
+            }
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message,
+            })
+        }
+    }
 }
