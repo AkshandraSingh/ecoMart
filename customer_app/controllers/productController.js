@@ -95,4 +95,28 @@ module.exports = {
             });
         }
     },
+
+    //? Search Product API for Sellers ✅
+    searchProduct: async (req, res) => {
+        try {
+            const { productName } = req.params
+            const searchData = await productModel.find({ productName: { $regex: `^${productName}`, $options: "i" } })
+            if (searchData.length === 0) {
+                return res.status(404).send({
+                    success: false,
+                    message: "Product not found!"
+                })
+            }
+            res.status(200).send({
+                success: true,
+                message: "Product Found",
+                productData: searchData
+            })
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                error: `Error occurred: ${error.message}`,
+            });
+        }
+    },
 }
