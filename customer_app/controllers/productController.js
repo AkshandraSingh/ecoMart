@@ -38,6 +38,7 @@ module.exports = {
             })
         }
     },
+
     //? Edit Product API for Seller 👇🏻
     editProduct: async (req, res) => {
         try {
@@ -49,7 +50,7 @@ module.exports = {
                     categoryName: productCategory
                 });
                 if (!isCategoryExist) {
-                    return res.status(401).json({
+                    return res.status(401).send({
                         success: false,
                         message: "Category Does not exist !"
                     });
@@ -66,12 +67,29 @@ module.exports = {
                     productStock: productStock || undefined,
                 },
             );
-            res.status(200).json({
+            res.status(200).send({
                 success: true,
                 message: "Product Edited Successfully!",
             });
         } catch (error) {
-            res.status(500).json({
+            res.status(500).send({
+                success: false,
+                error: `Error occurred: ${error.message}`,
+            });
+        }
+    },
+
+    //? Delete Product API for Seller 👇🏻
+    deleteProduct: async (req, res) => {
+        try {
+            const productId = req.params.productId;
+            const deleteProductData = await productModel.findByIdAndDelete(productId);
+            res.status(200).send({
+                success: true,
+                message: "Product Deleted Successfully!",
+            });
+        } catch (error) {
+            res.status(500).send({
                 success: false,
                 error: `Error occurred: ${error.message}`,
             });
