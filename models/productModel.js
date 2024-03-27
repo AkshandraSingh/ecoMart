@@ -25,6 +25,11 @@ const productModel = new mongoose.Schema({
         type: String,
         default: 'D:/Node Projects/EcoMart/uploads/productsImages/defaultProductImage.png',
     },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'customer',
+        required: true,
+    },
     isActive: {
         type: Boolean,
         default: true,
