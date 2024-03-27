@@ -37,5 +37,44 @@ module.exports = {
                 error: error.message,
             })
         }
-    }
+    },
+    //? Edit Product API for Seller 👇🏻
+    editProduct: async (req, res) => {
+        try {
+            const productId = req.params.productId;
+            const { productName, productDescription, productCategory, productPrice, productStock } = req.body;
+            const productImage = req.file ? `/upload/productImages/${req.file.filename}` : undefined;
+            if (productCategory) {
+                const isCategoryExist = await categoryModel.findOne({
+                    categoryName: productCategory
+                });
+                if (!isCategoryExist) {
+                    return res.status(401).json({
+                        success: false,
+                        message: "Category Does not exist !"
+                    });
+                }
+            }
+            const editProductData = await productModel.findByIdAndUpdate(
+                productId,
+                {
+                    productName: productName || undefined,
+                    productImage: productImage || undefined,
+                    productDescription: productDescription || undefined,
+                    productCategory: productCategory || undefined,
+                    productPrice: productPrice || undefined,
+                    productStock: productStock || undefined,
+                },
+            );
+            res.status(200).json({
+                success: true,
+                message: "Product Edited Successfully!",
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                error: `Error occurred: ${error.message}`,
+            });
+        }
+    },
 }
