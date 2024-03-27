@@ -119,4 +119,25 @@ module.exports = {
             });
         }
     },
+
+    //? Add to Cart API for Customer 💀
+    addToCart: async (req, res) => {
+        try {
+            const { productId, customerId } = req.params
+            const quantity = req.body.quantity
+            const customerData = await customerModel.findById(customerId)
+            customerData.cart.push({ productId, quantity });
+            await customerData.save()
+            res.status(200).json({
+                success: true,
+                message: "Successfully Added to Cart!",
+            })
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message,
+            })
+        }
+    }
 }
