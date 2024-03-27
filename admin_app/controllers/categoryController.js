@@ -80,4 +80,44 @@ module.exports = {
             })
         }
     },
+    //? Get all categories API for Admin 👀
+    getAllCategories: async (req, res) => {
+        try {
+            const categories = await categoryModel.find().select("categoryName")
+            res.status(200).send({
+                success: true,
+                message: "Categories fetched successfully!",
+                allCategory: categories,
+            })
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message,
+            })
+        }
+    },
+    //? Search category API for Admin 🆒
+    searchCategory: async (req, res) => {
+        try {
+            const { categoryName } = req.params
+            const searchData = await categoryModel.find({ categoryName: { $regex: `^${categoryName}`, $options: "i" } }).select('categoryName')
+            if (searchData.length === 0) {
+                return res.status(404).send({
+                    success: false,
+                    message: "Category not found!"
+                })
+            }
+            res.status(200).send({
+                success: true,
+                message: "Category Found",
+                categoryData: searchData
+            })
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                error: `Error occurred: ${error.message}`,
+            });
+        }
+    },
 }
