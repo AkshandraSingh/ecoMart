@@ -57,4 +57,27 @@ module.exports = {
             })
         }
     },
+    //? Delete category API for Admin 🧠
+    deleteCategory: async (req, res) => {
+        try {
+            const { categoryId } = req.params
+            const deleteCategory = await categoryModel.findByIdAndDelete(categoryId)
+            if (!deleteCategory) {
+                return res.status(400).send({
+                    success: false,
+                    message: "Category does not exist!",
+                })
+            }
+            res.status(200).send({
+                success: true,
+                message: "Category deleted successfully!",
+            })
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message,
+            })
+        }
+    },
 }
