@@ -187,4 +187,94 @@ module.exports = {
             });
         }
     },
+
+    //? Remove Product From Cart API For Customer 👀
+    removeProductFromCart: async (req, res) => {
+        try {
+            const { productId, customerId } = req.params;
+            const customerData = await customerModel.findById(customerId);
+            const index = customerData.cart.findIndex(cartItem => cartItem.productId === productId);
+            customerData.cart.splice(index, 1);
+            await customerData.save()
+            res.status(200).send({
+                success: true,
+                message: "Successfully Removed From Cart!",
+            });
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message
+            });
+        }
+    },
+
+    //? Decrease Quantity of Product API for Customer 🍎
+    decreaseQuantity: async (req, res) => {
+        try {
+            const { productId, customerId } = req.params;
+            const customerData = await customerModel.findById(customerId);
+            const customerCart = customerData.cart
+            for (let index = 0; index < customerCart.length; index++) {
+                const element = customerCart[index].productId.toString()
+                if (element === productId) {
+                    if (customerCart[index].quantity <= 1) {
+                        return res.status(400).send({
+                            success: false,
+                            message: "Product reached minium Quantity!",
+                        });
+                    }
+                    customerCart[index].quantity--
+                    await customerData.save()
+                    return res.status(200).send({
+                        success: true,
+                        message: "Successfully Decreased Quantity!",
+                    });
+                } else {
+                    return res.status(404).send({
+                        success: false,
+                        message: "Product not found!",
+                    });
+                }
+            }
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message
+            });
+        }
+    },
+
+    //? Increase Quantity of Product API for Customer 🍏
+    increaseQuantity: async (req, res) => {
+        try {
+            const { productId, customerId } = req.params;
+            const customerData = await customerModel.findById(customerId);
+            const customerCart = customerData.cart
+            for (let index = 0; index < customerCart.length; index++) {
+                const element = customerCart[index].productId.toString()
+                if (element === productId) {
+                    customerCart[index].quantity++
+                    await customerData.save()
+                    return res.status(200).send({
+                        success: true,
+                        message: "Successfully Increased Quantity!",
+                    });
+                } else {
+                    return res.status(404).send({
+                        success: false,
+                        message: "Product not found!",
+                    });
+                }
+            }
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message
+            });
+        }
+    },
+
 }
