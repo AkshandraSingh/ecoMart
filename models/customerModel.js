@@ -27,6 +27,10 @@ const customerModel = new mongoose.Schema({
         type: String, // Customer or Seller
         default: "customer"
     },
+    accountBalance: {
+        type: Number,
+        default: 0,
+    },
     usedPasswords: {
         type: [],
         default: [],
