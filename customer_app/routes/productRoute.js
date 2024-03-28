@@ -10,5 +10,6 @@ productRouter.post('/addToCart/:customerId/:productId', productController.addToC
 productRouter.patch('/editProduct/:productId', productImageStorage.upload.single('productImage'), productController.editProduct)
 productRouter.delete('/deleteProduct/:productId', productController.deleteProduct)
 productRouter.get('/searchProduct/:productName', productController.searchProduct)
+productRouter.get('/viewCart/:customerId', productController.viewCart)
 
 module.exports = productRouter

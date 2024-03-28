@@ -25,6 +25,10 @@ const productModel = new mongoose.Schema({
         type: String,
         default: 'D:/Node Projects/EcoMart/uploads/productsImages/defaultProductImage.png',
     },
+    timesProductSold: {
+        type: Number,
+        default: 0,
+    },
     moneyByProduct: {
         type: Number,
         default: 0,

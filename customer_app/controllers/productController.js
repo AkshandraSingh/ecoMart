@@ -139,5 +139,32 @@ module.exports = {
                 error: error.message,
             })
         }
-    }
+    },
+
+    //? View Cart API for Customer 🦕
+    viewCart: async (req, res) => {
+        try {
+            const { customerId } = req.params;
+            const customerData = await customerModel.findById(customerId);
+            const cartData = [];
+            for (const cartItem of customerData.cart) {
+                const productData = await productModel.findById(cartItem.productId).select("productName productDescription productPrice productImage")
+                cartData.push({
+                    productData,
+                    quantity: cartItem.quantity
+                });
+            }
+            res.status(200).send({
+                success: true,
+                message: "Successfully Viewed Cart!",
+                cartData: cartData
+            });
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message
+            });
+        }
+    },
 }
