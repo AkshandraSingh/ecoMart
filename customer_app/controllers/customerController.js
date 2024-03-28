@@ -269,4 +269,48 @@ module.exports = {
             })
         }
     },
+
+    //? Deposit Balance API For Customer 🧛
+    depositBalance: async (req, res) => {
+        try {
+            const { userId } = req.params
+            const { depositAmount } = req.body
+            const customerData = await customerModel.findById(userId)
+            customerData.accountBalance += depositAmount
+            await customerData.save()
+            res.status(200).json({
+                success: true,
+                message: "Successfully Deposited Balance!",
+                currentBalance: customerData.accountBalance,
+            })
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message,
+            })
+        }
+    },
+
+    //? Withdraw Balance API For Customer 🧛
+    withdrawBalance: async (req, res) => {
+        try {
+            const { userId } = req.params
+            const { withdrawAmount } = req.body
+            const customerData = await customerModel.findById(userId)
+            customerData.accountBalance = customerData.accountBalance - withdrawAmount
+            await customerData.save()
+            res.status(200).json({
+                success: true,
+                message: "Successfully Withdrawn Balance!",
+                currentBalance: customerData.accountBalance,
+            })
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message,
+            })
+        }
+    },
 }
