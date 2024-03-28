@@ -167,4 +167,24 @@ module.exports = {
             });
         }
     },
+
+    //? Empty Cart API For Customer 🧠
+    emptyCart: async (req, res) => {
+        try {
+            const { customerId } = req.params;
+            const customerData = await customerModel.findById(customerId);
+            customerData.cart = [];
+            await customerData.save()
+            res.status(200).send({
+                success: true,
+                message: "Successfully Emptied Cart!",
+            });
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message
+            });
+        }
+    },
 }
