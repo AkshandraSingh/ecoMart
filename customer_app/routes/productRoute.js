@@ -15,5 +15,6 @@ productRouter.get('/emptyCart/:customerId', productController.emptyCart)
 productRouter.get('/removeProductFromCart/:customerId/:productId', productController.removeProductFromCart)
 productRouter.get('/decreaseQuantity/:customerId/:productId', productController.decreaseQuantity)
 productRouter.get('/increaseQuantity/:customerId/:productId', productController.increaseQuantity)
+productRouter.get('/billCart/:customerId', productController.billCart)
 
 module.exports = productRouter

@@ -277,4 +277,35 @@ module.exports = {
         }
     },
 
+    //? Bill Cart API for Customer ✅
+    billCart: async (req, res) => {
+        try {
+            let totalAmount = 0
+            const { customerId } = req.params
+            const customerData = await customerModel.findById(customerId)
+            const customerCart = customerData.cart
+            if (customerCart.length <= 0) {
+                return res.status(400).send({
+                    success: false,
+                    message: "Cart is empty!",
+                })
+            }
+            for (let index = 0; index < customerCart.length; index++) {
+                const productRealId = customerCart[index].productId.toString()
+                const productData = await productModel.findById(productRealId)
+                totalAmount += productData.productPrice * customerCart[index].quantity
+            }
+            res.status(200).send({
+                success: true,
+                message: "Successfully Billed Cart!",
+                totalAmount: totalAmount
+            })
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message
+            });
+        }
+    }
 }
