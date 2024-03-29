@@ -7,6 +7,7 @@ const productRouter = express.Router()
 
 productRouter.post('/addProduct/:userId', productController.addProduct)
 productRouter.post('/addToCart/:customerId/:productId', productController.addToCart)
+productRouter.post('/orderProduct/:customerId/:productId', productController.orderProduct)
 productRouter.patch('/editProduct/:productId', productImageStorage.upload.single('productImage'), productController.editProduct)
 productRouter.delete('/deleteProduct/:productId', productController.deleteProduct)
 productRouter.get('/searchProduct/:productName', productController.searchProduct)

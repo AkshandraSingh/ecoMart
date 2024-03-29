@@ -307,5 +307,52 @@ module.exports = {
                 error: error.message
             });
         }
-    }
+    },
+
+    //? Order Product API for Customer 👀
+    orderProduct: async (req, res) => {
+        try {
+            const { customerId, productId } = req.params
+            const { paymentMode, quantity } = req.body
+            const customerData = await customerModel.findById(customerId)
+            const productData = await productModel.findById(productId)
+            const sellerData = await customerModel.findById(productData.userId)
+            const pricePaid = productData.productPrice * quantity
+            if (pricePaid > customerData.accountBalance) {
+                return res.status(400).send({
+                    success: false,
+                    message: "Insufficient Balance!",
+                })
+            }
+            if (paymentMode === "cash on delivery" | paymentMode === "CASH ON DELIVERY") {
+                productData.timesProductSold = productData.timesProductSold + quantity
+                productData.productStock = productData.productStock - quantity
+                sellerData.accountBalance += productData.productPrice * quantity
+                await productData.save()
+                await sellerData.save()
+                return res.status(200).send({
+                    success: true,
+                    message: "Successfully Ordered Product!",
+                })
+            } else {
+                productData.timesProductSold = productData.timesProductSold + quantity
+                productData.productStock = productData.productStock - quantity
+                sellerData.accountBalance += productData.productPrice * quantity
+                customerData.accountBalance -= productData.productPrice * quantity
+                await productData.save()
+                await sellerData.save()
+                await customerData.save()
+                return res.status(200).send({
+                    success: true,
+                    message: "Successfully Ordered Product!",
+                })
+            }
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message
+            });
+        }
+    },
 }
