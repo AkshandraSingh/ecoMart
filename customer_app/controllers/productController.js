@@ -126,6 +126,13 @@ module.exports = {
             const { productId, customerId } = req.params
             const quantity = req.body.quantity
             const customerData = await customerModel.findById(customerId)
+            const productData = await productModel.findById(productId)
+            if (productData.productStock <= quantity) {
+                return res.status(400).send({
+                    success: false,
+                    message: "Stock is not available!"
+                })
+            }
             customerData.cart.push({ productId, quantity });
             await customerData.save()
             res.status(200).json({
