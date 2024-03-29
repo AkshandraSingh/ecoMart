@@ -362,4 +362,53 @@ module.exports = {
             });
         }
     },
+
+    //? Order all product from cart 🐘
+    orderAllProduct: async (req, res) => {
+        try {
+            let pricePaid = 0
+            const { customerId } = req.params
+            const { paymentMode } = req.body
+            const customerData = await customerModel.findById(customerId)
+            const customerCart = customerData.cart
+            if (customerCart.length <= 0) {
+                return res.status(400).send({
+                    success: false,
+                    message: "Cart is empty!",
+                })
+            }
+            for (const element of customerCart) {
+                const productData = await productModel.findById(element.productId.toString())
+                const sellerData = await customerModel.findById(productData.userId)
+                pricePaid += productData.productPrice * element.quantity
+                if (pricePaid > customerData.accountBalance) {
+                    return res.status(400).send({
+                        success: false,
+                        message: "Insufficient Balance!",
+                    })
+                }
+                productData.timesProductSold = productData.timesProductSold + element.quantity
+                productData.productStock = productData.productStock - element.quantity
+                customerData.cart = []
+                if (paymentMode === "cash on delivery" | paymentMode === "CASH ON DELIVERY") {
+                    sellerData.accountBalance += productData.productPrice * element.quantity
+                } else {
+                    customerData.accountBalance -= productData.productPrice * element.quantity
+                }
+                await productData.save()
+                await sellerData.save()
+                await customerData.save()
+            }
+            res.status(200).send({
+                success: true,
+                message: "Successfully Ordered All Product!",
+            })
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message
+            });
+        }
+    },
 }
