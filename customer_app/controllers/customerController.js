@@ -215,7 +215,7 @@ module.exports = {
     viewProfile: async (req, res) => {
         try {
             const { userId } = req.params
-            const profileData = await customerModel.findById(userId).select("customerName customerGender userRole customerProfilePic")
+            const profileData = await customerModel.findById(userId).select("customerName customerGender userRole customerProfilePic customerEmail customerPhone customerAddress accountBalance cart")
             res.status(200).json({
                 success: true,
                 message: "Successfully Viewed Profile",
@@ -230,12 +230,15 @@ module.exports = {
         }
     },
     //? Update Name API For Customer 🧙
-    updateName: async (req, res) => {
+    editProfile: async (req, res) => {
         try {
             const { userId } = req.params
-            const { customerName } = req.body
-            const customerData = await customerModel.findById(userId)
-            customerData.customerName = customerName
+            const { customerName, customerAddress, userRole } = req.body
+            const customerData = await customerModel.findByIdAndUpdate(userId, {
+                customerName: customerName || undefined,
+                customerAddress: customerAddress || undefined,
+                userRole: userRole || undefined,
+            })
             await customerData.save()
             res.status(200).json({
                 success: true,
