@@ -9,5 +9,6 @@ categoryRouter.patch('/updateCategory/:categoryId', categoryController.updateCat
 categoryRouter.delete('/deleteCategory/:categoryId', categoryController.deleteCategory)
 categoryRouter.get('/searchCategory/:categoryName', categoryController.searchCategory)
 categoryRouter.get('/getAllCategories', categoryController.getAllCategories)
+categoryRouter.get('/productsFromCategory/:categoryId', categoryController.productsFromCategory)
 
 module.exports = categoryRouter;

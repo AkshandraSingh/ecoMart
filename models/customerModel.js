@@ -23,6 +23,10 @@ const customerModel = new mongoose.Schema({
         type: String, // Male or Female
         required: true,
     },
+    customerAddress: {
+        type: String,
+        required: true,
+    },
     userRole: {
         type: String, // Customer or Seller
         default: "customer"

@@ -1,4 +1,5 @@
 const categoryModel = require('../../models/categoryModel')
+const productModel = require('../../models/productModel')
 
 module.exports = {
     //? Add Category API For Admin 👀
@@ -32,7 +33,7 @@ module.exports = {
         try {
             const { categoryId } = req.params
             const isCategoryExist = await categoryModel.findOne({
-                categoryId: req.params.id
+                categoryId: categoryId
             })
             if (!isCategoryExist) {
                 return res.status(400).send({
@@ -41,7 +42,7 @@ module.exports = {
                 })
             }
             const categoryData = await categoryModel.findOneAndUpdate({
-                categoryId: req.params.id
+                categoryId: categoryId
             }, req.body, {
                 new: true
             })
@@ -114,10 +115,32 @@ module.exports = {
                 categoryData: searchData
             })
         } catch (error) {
-            res.status(500).json({
+            res.status(500).send({
                 success: false,
-                error: `Error occurred: ${error.message}`,
-            });
+                message: "Server error!",
+                error: error.message,
+            })
+        }
+    },
+
+    //? Get all products from category API for Customer 💀
+    productsFromCategory: async (req, res) => {
+        try {
+            const { categoryId } = req.params
+            const categoryData = await categoryModel.findById(categoryId)
+            const categoryName = categoryData.categoryName
+            const productsData = await productModel.find({ productCategory: categoryName }).select("productName productDescription productPrice productCategory productStock productImage timesProductSold")
+            res.status(200).send({
+                success: true,
+                message: "Products fetched successfully!",
+                productsData: productsData,
+            })
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message,
+            })
         }
     },
 }
