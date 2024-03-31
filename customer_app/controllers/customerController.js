@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 
 const customerModel = require('../../models/customerModel')
 const emailService = require('../../services/emailService')
+const customerLogger = require('../../utils/customerLogger/customerLogger')
 
 module.exports = {
     //? Signup API For Customer 👀
@@ -23,17 +24,20 @@ module.exports = {
                     'F:/Node Projects/EcoMart/uploads/avatars/femaleAvatar.jpg';
                 customerData.usedPasswords.push(bcryptPassword)
                 await customerData.save()
+                customerLogger.info("Account Created Successfully!")
                 res.status(201).send({
                     success: true,
                     message: "Account is created successfully!"
                 })
             } else {
+                customerLogger.error("Email or Phone already exist")
                 res.status(401).send({
                     success: false,
                     message: "Email or Phone already exist!"
                 })
             }
         } catch (error) {
+            customerLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: true,
                 message: "Server error!",
@@ -52,6 +56,7 @@ module.exports = {
                 customerPhone: customerAccount
             })
             if (!isCustomerEmail && !isCustomerPhone) {
+                customerLogger.error("Customer not found")
                 return res.status(404).send({
                     success: false,
                     message: "Customer not found "
@@ -61,18 +66,21 @@ module.exports = {
             const isCorrectPassword = await bcrypt.compare(customerPassword, customerData.customerPassword)
             if (isCorrectPassword) {
                 const token = jwt.sign({ customerData }, process.env.SECRET_KEY, { expiresIn: '1h' });
+                customerLogger.info("Login successfully")
                 return res.status(200).send({
                     success: true,
                     message: "Login successfully!",
                     token: token,
                 })
             } else {
+                customerLogger.error("User email/phone or password is incorrect")
                 res.status(400).send({
                     success: false,
                     message: "User email/phone or password is incorrect"
                 })
             }
         } catch (error) {
+            customerLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: true,
                 message: "Server error!",
@@ -88,6 +96,7 @@ module.exports = {
                 customerEmail: customerEmail
             })
             if (!isEmailExist) {
+                customerLogger.error("Customer not found!")
                 return res.status(404).send({
                     success: false,
                     message: "Customer not found!"
@@ -96,6 +105,7 @@ module.exports = {
             const token = jwt.sign({ isEmailExist }, process.env.SECRET_KEY, { expiresIn: '1h' });
             const resetPasswordLink = `https://ecoMart/customer/resetPassword/${isEmailExist._id}/${token}`
             await emailService.mailOptions(customerEmail, resetPasswordLink)
+            customerLogger.info("Email has been sended successfully")
             res.status(200).send({
                 success: true,
                 message: "Email has been sended successfully",
@@ -103,6 +113,7 @@ module.exports = {
                 token: token,
             })
         } catch (error) {
+            customerLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
@@ -127,6 +138,7 @@ module.exports = {
                         }
                     }
                     if (isPasswordExist) {
+                        customerLogger.error("Don't use old passwords, try another password")
                         return res.status(401).json({
                             success: false,
                             message: "Don't use old passwords, try another password",
@@ -136,23 +148,27 @@ module.exports = {
                     customerData.customerPassword = bcryptPassword
                     customerData.usedPasswords.push(bcryptPassword)
                     await customerData.save();
+                    customerLogger.info("Password Updated")
                     res.status(201).json({
                         success: true,
                         message: "Password Updated",
                     });
                 } else {
+                    customerLogger.error("New password or confirm password is incorrect")
                     res.status(401).send({
                         success: false,
                         message: "New password or confirm password is incorrect"
                     })
                 }
             } else {
+                customerLogger.error("Token is incorrect or expire")
                 res.status(401).send({
                     success: false,
                     message: "Token is incorrect or expire"
                 })
             }
         } catch (error) {
+            customerLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
@@ -177,6 +193,7 @@ module.exports = {
                         }
                     }
                     if (isPasswordExist) {
+                        customerLogger.error("Don't use old passwords, try another password")
                         return res.status(401).json({
                             success: false,
                             message: "This password you already used in the past",
@@ -186,24 +203,28 @@ module.exports = {
                         customerData.customerPassword = bcryptPassword;
                         customerData.usedPasswords.push(bcryptPassword);
                         await customerData.save();
+                        customerLogger.info("Password Updated")
                         res.status(200).json({
                             success: true,
                             message: "Your Password is updated!",
                         });
                     }
                 } else {
+                    customerLogger.error("New password and Confirm password do not match")
                     res.status(401).json({
                         success: false,
                         message: "New password and Confirm password do not match",
                     });
                 }
             } else {
+                customerLogger.error("Old password is incorrect")
                 res.status(401).json({
                     success: false,
                     message: "Old password is incorrect",
                 });
             }
         } catch (error) {
+            customerLogger.error(`Server Error: ${error.message}`)
             res.status(500).json({
                 success: false,
                 message: "Error",
@@ -216,12 +237,14 @@ module.exports = {
         try {
             const { userId } = req.params
             const profileData = await customerModel.findById(userId).select("customerName customerGender userRole customerProfilePic customerEmail customerPhone customerAddress accountBalance cart")
+            customerLogger.info("Successfully viewed profile")
             res.status(200).json({
                 success: true,
                 message: "Successfully Viewed Profile",
                 profileData: profileData
             })
         } catch (error) {
+            customerLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
@@ -240,11 +263,13 @@ module.exports = {
                 userRole: userRole || undefined,
             })
             await customerData.save()
+            customerLogger.info("Successfully Updated Name!")
             res.status(200).json({
                 success: true,
                 message: "Successfully Updated Name!",
             })
         } catch (error) {
+            customerLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
@@ -260,11 +285,13 @@ module.exports = {
             const customerData = await customerModel.findById(userId)
             customerData.customerProfilePic = customerProfilePic
             await customerData.save()
-            res.status(200).json({
+            customerLogger.info("Successfully Updated Profile Pic!")
+            res.status(200).send({
                 success: true,
                 message: "Successfully Updated Profile Pic!",
             })
         } catch (error) {
+            customerLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
@@ -281,12 +308,14 @@ module.exports = {
             const customerData = await customerModel.findById(userId)
             customerData.accountBalance += depositAmount
             await customerData.save()
-            res.status(200).json({
+            customerLogger.info("Successfully Deposited Balance!")
+            res.status(200).send({
                 success: true,
                 message: "Successfully Deposited Balance!",
                 currentBalance: customerData.accountBalance,
             })
         } catch (error) {
+            customerLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
@@ -303,12 +332,14 @@ module.exports = {
             const customerData = await customerModel.findById(userId)
             customerData.accountBalance = customerData.accountBalance - withdrawAmount
             await customerData.save()
-            res.status(200).json({
+            customerLogger.info("Successfully Withdrawn Balance!")
+            res.status(200).send({
                 success: true,
                 message: "Successfully Withdrawn Balance!",
                 currentBalance: customerData.accountBalance,
             })
         } catch (error) {
+            customerLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
