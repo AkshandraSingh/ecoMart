@@ -71,4 +71,22 @@ module.exports = {
             })
         }
     },
+
+    //? View Feedback API for Admin 🧠
+    viewFeedback: async (req, res) => {
+        try {
+            const feedbackData = await feedbackModel.find()
+            res.status(200).send({
+                success: true,
+                message: "Feedback fetched successfully!",
+                feedbackData: feedbackData
+            })
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message,
+            })
+        }
+    },
 }
