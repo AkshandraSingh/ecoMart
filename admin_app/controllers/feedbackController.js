@@ -26,4 +26,49 @@ module.exports = {
             })
         }
     },
+
+    //? update Feedback API for Customers/Sellers ✨
+    updateFeedback: async (req, res) => {
+        try {
+            const { feedbackId } = req.params
+            if (req.body.rating > 5) {
+                return res.status(401).send({
+                    success: false,
+                    message: "Please rate from 1 to 5",
+                })
+            }
+            const feedbackData = await feedbackModel.findByIdAndUpdate(feedbackId, {
+                feedback: req.body.feedback || undefined,
+                rating: req.body.rating || undefined,
+            })
+            res.status(200).send({
+                success: true,
+                message: "Feedback updated successfully!",
+            })
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message,
+            })
+        }
+    },
+
+    //? Delete Feedback API for Customers/Sellers 🧠
+    deleteFeedback: async (req, res) => {
+        try {
+            const { feedbackId } = req.params
+            await feedbackModel.findByIdAndDelete(feedbackId)
+            res.status(200).send({
+                success: true,
+                message: "Feedback deleted successfully!",
+            })
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message,
+            })
+        }
+    },
 }

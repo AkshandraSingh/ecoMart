@@ -5,5 +5,7 @@ const feedbackController = require('../controllers/feedbackController')
 const feedbackRouter = express.Router()
 
 feedbackRouter.post("/addFeedback/:userId", feedbackController.addFeedback)
+feedbackRouter.patch("/updateFeedback/:feedbackId", feedbackController.updateFeedback)
+feedbackRouter.delete("/deleteFeedback/:feedbackId", feedbackController.deleteFeedback)
 
 module.exports = feedbackRouter;
