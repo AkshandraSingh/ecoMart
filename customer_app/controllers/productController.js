@@ -1,6 +1,7 @@
 const productModel = require('../../models/productModel')
 const customerModel = require('../../models/customerModel')
 const categoryModel = require('../../models/categoryModel')
+const reviewModel = require('../../models/reviewModel')
 const productLogger = require('../../utils/productLogger/productLogger')
 
 module.exports = {
@@ -441,6 +442,31 @@ module.exports = {
             res.status(200).send({
                 success: true,
                 message: "Successfully Ordered All Product!",
+            })
+        } catch (error) {
+            productLogger.error(`Server Error: ${error.message}`)
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message
+            });
+        }
+    },
+
+    //? View Product API for Customer 🧠
+    viewProduct: async (req, res) => {
+        try {
+            const { productId } = req.params
+            const productData = await productModel.findById(productId)
+            const reviewData = await reviewModel.find({
+                productId: productId
+            })
+            productLogger.info("Successfully Viewed Product!")
+            res.status(200).send({
+                success: true,
+                message: "Successfully Viewed Product!",
+                productData: productData,
+                reviewData: reviewData,
             })
         } catch (error) {
             productLogger.error(`Server Error: ${error.message}`)

@@ -9,8 +9,6 @@ productRouter.post('/addProduct/:userId', productController.addProduct)
 productRouter.post('/addToCart/:customerId/:productId', productController.addToCart)
 productRouter.post('/orderProduct/:customerId/:productId', productController.orderProduct)
 productRouter.post('/orderAllProduct/:customerId', productController.orderAllProduct)
-productRouter.patch('/editProduct/:productId', productImageStorage.upload.single('productImage'), productController.editProduct)
-productRouter.delete('/deleteProduct/:productId', productController.deleteProduct)
 productRouter.get('/searchProduct/:productName', productController.searchProduct)
 productRouter.get('/viewCart/:customerId', productController.viewCart)
 productRouter.get('/emptyCart/:customerId', productController.emptyCart)
@@ -18,5 +16,8 @@ productRouter.get('/removeProductFromCart/:customerId/:productId', productContro
 productRouter.get('/decreaseQuantity/:customerId/:productId', productController.decreaseQuantity)
 productRouter.get('/increaseQuantity/:customerId/:productId', productController.increaseQuantity)
 productRouter.get('/billCart/:customerId', productController.billCart)
+productRouter.get('/viewProduct/:productId', productController.viewProduct)
+productRouter.patch('/editProduct/:productId', productImageStorage.upload.single('productImage'), productController.editProduct)
+productRouter.delete('/deleteProduct/:productId', productController.deleteProduct)
 
 module.exports = productRouter
