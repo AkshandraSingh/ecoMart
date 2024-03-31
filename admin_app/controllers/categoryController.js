@@ -1,10 +1,19 @@
 const categoryModel = require('../../models/categoryModel')
 const productModel = require('../../models/productModel')
+const customerModel = require('../../models/customerModel')
 
 module.exports = {
     //? Add Category API For Admin 👀
     addCategory: async (req, res) => {
         try {
+            const { userId } = req.params
+            const userData = await customerModel.findById(userId)
+            if (userData.userRole !== "admin") {
+                return res.status(400).send({
+                    success: false,
+                    message: "You are not admin!",
+                })
+            }
             const categoryData = new categoryModel(req.body)
             const isCategoryExist = await categoryModel.findOne({
                 categoryName: req.body.categoryName
@@ -31,19 +40,15 @@ module.exports = {
     //? Update Category API For Admin 🎯
     updateCategory: async (req, res) => {
         try {
-            const { categoryId } = req.params
-            const isCategoryExist = await categoryModel.findOne({
-                categoryId: categoryId
-            })
-            if (!isCategoryExist) {
+            const { userId, categoryId } = req.params
+            const userData = await customerModel.findById(userId)
+            if (userData.userRole !== "admin") {
                 return res.status(400).send({
                     success: false,
-                    message: "Category does not exist!",
+                    message: "You are not admin!",
                 })
             }
-            const categoryData = await categoryModel.findOneAndUpdate({
-                categoryId: categoryId
-            }, req.body, {
+            const updateCategory = await categoryModel.findByIdAndUpdate(categoryId, req.body, {
                 new: true
             })
             res.status(200).send({
@@ -61,7 +66,14 @@ module.exports = {
     //? Delete category API for Admin 🧠
     deleteCategory: async (req, res) => {
         try {
-            const { categoryId } = req.params
+            const { categoryId, userId } = req.params
+            const userData = await customerModel.findById(userId)
+            if (userData.userRole !== "admin") {
+                return res.status(400).send({
+                    success: false,
+                    message: "You are not admin!",
+                })
+            }
             const deleteCategory = await categoryModel.findByIdAndDelete(categoryId)
             if (!deleteCategory) {
                 return res.status(400).send({
@@ -81,7 +93,7 @@ module.exports = {
             })
         }
     },
-    //? Get all categories API for Admin 👀
+    //? Get all categories API for customer/Seller 👀
     getAllCategories: async (req, res) => {
         try {
             const categories = await categoryModel.find().select("categoryName")
@@ -98,7 +110,7 @@ module.exports = {
             })
         }
     },
-    //? Search category API for Admin 🆒
+    //? Search category API for customer/seller 🆒
     searchCategory: async (req, res) => {
         try {
             const { categoryName } = req.params

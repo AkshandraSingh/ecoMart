@@ -1,4 +1,5 @@
 const feedbackModel = require("../../models/feedbackModel")
+const userModel = require('../../models/customerModel')
 
 module.exports = {
     //? Add Feedback API for Customers/Sellers 👀
@@ -75,6 +76,14 @@ module.exports = {
     //? View Feedback API for Admin 🧠
     viewFeedback: async (req, res) => {
         try {
+            const { userId } = req.params
+            const userData = await userModel.findById(userId)
+            if (userData.userRole !== "admin") {
+                return res.status(401).send({
+                    success: false,
+                    message: "You are not authorized to view feedback!",
+                })
+            }
             const feedbackData = await feedbackModel.find()
             res.status(200).send({
                 success: true,

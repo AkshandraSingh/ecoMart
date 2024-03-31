@@ -28,7 +28,7 @@ const customerModel = new mongoose.Schema({
         required: true,
     },
     userRole: {
-        type: String, // Customer or Seller
+        type: String, // Customer,Seller and Admin
         default: "customer"
     },
     accountBalance: {
