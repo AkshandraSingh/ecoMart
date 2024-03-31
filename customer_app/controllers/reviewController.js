@@ -2,6 +2,7 @@ const reviewModel = require('../../models/reviewModel')
 const reviewLogger = require("../../utils/reviewLogger/reviewLogger")
 
 module.exports = {
+    //? Add Review API for Customer 
     addReview: async (req, res) => {
         try {
             const { userId, productId } = req.params
@@ -31,6 +32,7 @@ module.exports = {
         }
     },
 
+    //? Update Review API for Customer
     updateReview: async (req, res) => {
         try {
             const { reviewId } = req.params
@@ -58,5 +60,25 @@ module.exports = {
                 error: error.message
             })
         }
-    }
+    },
+
+    //? Delete Review API for Customer
+    deleteReview: async (req, res) => {
+        try {
+            const { reviewId } = req.params
+            const deletedReview = await reviewModel.findByIdAndDelete(reviewId)
+            reviewLogger.info("Review deleted successfully!")
+            res.status(200).send({
+                success: true,
+                message: "Review deleted successfully!",
+            })
+        } catch (error) {
+            reviewLogger.error(`Server Error: ${error.message}`)
+            res.status(500).send({
+                success: false,
+                message: "Server error!",
+                error: error.message
+            })
+        }
+    },
 }
