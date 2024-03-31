@@ -1,7 +1,7 @@
 const { createLogger, transports, format } = require('winston')
 require('winston-mongodb')
 
-const customerLogger = createLogger({
+const productLogger = createLogger({
     transports: [
         new transports.Console({
             level: "info",
@@ -12,7 +12,7 @@ const customerLogger = createLogger({
             format: format.combine(format.timestamp(), format.json())
         }),
         new transports.File({
-            filename: 'logs/customerLogger/customerLog.log',
+            filename: 'logs/productLogger/productLog.log',
             level: "info",
             maxsize: 5242880,
             format: format.combine(
@@ -27,10 +27,10 @@ const customerLogger = createLogger({
             options: {
                 useUnifiedTopology: true,
             },
-            collection: 'customerLogData',
+            collection: 'productLogData',
             format: format.combine(format.timestamp(), format.json())
         })
     ]
 })
 
-module.exports = customerLogger
+module.exports = productLogger

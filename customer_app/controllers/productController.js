@@ -1,6 +1,7 @@
 const productModel = require('../../models/productModel')
 const customerModel = require('../../models/customerModel')
 const categoryModel = require('../../models/categoryModel')
+const productLogger = require('../../utils/productLogger/productLogger')
 
 module.exports = {
     //? Add Product API for Seller 👍🏻
@@ -13,12 +14,14 @@ module.exports = {
                 categoryName: productData.productCategory
             })
             if (userData.userRole === "customer") {
+                productLogger.error("User is not seller!")
                 return res.status(400).send({
                     success: false,
                     message: "You are not a seller!",
                 })
             }
             if (!isCategoryExist) {
+                productLogger.error("Category does not exist!")
                 return res.status(400).send({
                     success: false,
                     message: "Category does not exist!",
@@ -26,11 +29,13 @@ module.exports = {
             }
             productData.userId = userId
             await productData.save()
+            productLogger.info("Product is added successfully!")
             res.status(201).send({
                 success: true,
                 message: "Product is added successfully!"
             })
         } catch (error) {
+            productLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: true,
                 message: "Server error!",
@@ -50,6 +55,7 @@ module.exports = {
                     categoryName: productCategory
                 });
                 if (!isCategoryExist) {
+                    productLogger.error("Category does not exist!")
                     return res.status(401).send({
                         success: false,
                         message: "Category Does not exist !"
@@ -67,11 +73,13 @@ module.exports = {
                     productStock: productStock || undefined,
                 },
             );
+            productLogger.info("Product Edited Successfully!")
             res.status(200).send({
                 success: true,
                 message: "Product Edited Successfully!",
             });
         } catch (error) {
+            productLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 error: `Error occurred: ${error.message}`,
@@ -84,11 +92,13 @@ module.exports = {
         try {
             const productId = req.params.productId;
             const deleteProductData = await productModel.findByIdAndDelete(productId);
+            productLogger.info("Product Deleted Successfully!")
             res.status(200).send({
                 success: true,
                 message: "Product Deleted Successfully!",
             });
         } catch (error) {
+            productLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 error: `Error occurred: ${error.message}`,
@@ -102,18 +112,21 @@ module.exports = {
             const { productName } = req.params
             const searchData = await productModel.find({ productName: { $regex: `^${productName}`, $options: "i" } })
             if (searchData.length === 0) {
+                productLogger.error("Product not found!")
                 return res.status(404).send({
                     success: false,
                     message: "Product not found!"
                 })
             }
+            productLogger.info("Product Found")
             res.status(200).send({
                 success: true,
                 message: "Product Found",
                 productData: searchData
             })
         } catch (error) {
-            res.status(500).json({
+            productLogger.error(`Server Error: ${error.message}`)
+            res.status(500).send({
                 success: false,
                 error: `Error occurred: ${error.message}`,
             });
@@ -128,6 +141,7 @@ module.exports = {
             const customerData = await customerModel.findById(customerId)
             const productData = await productModel.findById(productId)
             if (productData.productStock <= quantity) {
+                productLogger.error("Stock is not available!")
                 return res.status(400).send({
                     success: false,
                     message: "Stock is not available!"
@@ -135,11 +149,13 @@ module.exports = {
             }
             customerData.cart.push({ productId, quantity });
             await customerData.save()
+            productLogger.info("Successfully Added to Cart!")
             res.status(200).json({
                 success: true,
                 message: "Successfully Added to Cart!",
             })
         } catch (error) {
+            productLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
@@ -161,12 +177,14 @@ module.exports = {
                     quantity: cartItem.quantity
                 });
             }
+            productLogger.info("Successfully Viewed Cart!")
             res.status(200).send({
                 success: true,
                 message: "Successfully Viewed Cart!",
                 cartData: cartData
             });
         } catch (error) {
+            productLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
@@ -182,11 +200,13 @@ module.exports = {
             const customerData = await customerModel.findById(customerId);
             customerData.cart = [];
             await customerData.save()
+            productLogger.info("Successfully Emptied Cart!")
             res.status(200).send({
                 success: true,
                 message: "Successfully Emptied Cart!",
             });
         } catch (error) {
+            productLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
@@ -203,11 +223,13 @@ module.exports = {
             const index = customerData.cart.findIndex(cartItem => cartItem.productId === productId);
             customerData.cart.splice(index, 1);
             await customerData.save()
+            productLogger.info("Successfully Removed From Cart!")
             res.status(200).send({
                 success: true,
                 message: "Successfully Removed From Cart!",
             });
         } catch (error) {
+            productLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
@@ -226,6 +248,7 @@ module.exports = {
                 const element = customerCart[index].productId.toString()
                 if (element === productId) {
                     if (customerCart[index].quantity <= 1) {
+                        productLogger.error("Product reached minium Quantity!")
                         return res.status(400).send({
                             success: false,
                             message: "Product reached minium Quantity!",
@@ -233,11 +256,13 @@ module.exports = {
                     }
                     customerCart[index].quantity--
                     await customerData.save()
+                    productLogger.info("Successfully Decreased Quantity!")
                     return res.status(200).send({
                         success: true,
                         message: "Successfully Decreased Quantity!",
                     });
                 } else {
+                    productLogger.error("Product not found!")
                     return res.status(404).send({
                         success: false,
                         message: "Product not found!",
@@ -245,6 +270,7 @@ module.exports = {
                 }
             }
         } catch (error) {
+            productLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
@@ -264,11 +290,13 @@ module.exports = {
                 if (element === productId) {
                     customerCart[index].quantity++
                     await customerData.save()
+                    productLogger.info("Successfully Increased Quantity!")
                     return res.status(200).send({
                         success: true,
                         message: "Successfully Increased Quantity!",
                     });
                 } else {
+                    productLogger.error("Product not found!")
                     return res.status(404).send({
                         success: false,
                         message: "Product not found!",
@@ -276,6 +304,7 @@ module.exports = {
                 }
             }
         } catch (error) {
+            productLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
@@ -292,6 +321,7 @@ module.exports = {
             const customerData = await customerModel.findById(customerId)
             const customerCart = customerData.cart
             if (customerCart.length <= 0) {
+                productLogger.error("Cart is empty!")
                 return res.status(400).send({
                     success: false,
                     message: "Cart is empty!",
@@ -302,12 +332,14 @@ module.exports = {
                 const productData = await productModel.findById(productRealId)
                 totalAmount += productData.productPrice * customerCart[index].quantity
             }
+            productLogger.info("Successfully Billed Cart!")
             res.status(200).send({
                 success: true,
                 message: "Successfully Billed Cart!",
                 totalAmount: totalAmount
             })
         } catch (error) {
+            productLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
@@ -326,6 +358,7 @@ module.exports = {
             const sellerData = await customerModel.findById(productData.userId)
             const pricePaid = productData.productPrice * quantity
             if (pricePaid > customerData.accountBalance) {
+                productLogger.error("Insufficient Balance!")
                 return res.status(400).send({
                     success: false,
                     message: "Insufficient Balance!",
@@ -337,6 +370,7 @@ module.exports = {
                 sellerData.accountBalance += productData.productPrice * quantity
                 await productData.save()
                 await sellerData.save()
+                productLogger.info("Successfully Ordered Product!")
                 return res.status(200).send({
                     success: true,
                     message: "Successfully Ordered Product!",
@@ -349,12 +383,14 @@ module.exports = {
                 await productData.save()
                 await sellerData.save()
                 await customerData.save()
+                productLogger.info("Successfully Ordered Product!")
                 return res.status(200).send({
                     success: true,
                     message: "Successfully Ordered Product!",
                 })
             }
         } catch (error) {
+            productLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
@@ -372,6 +408,7 @@ module.exports = {
             const customerData = await customerModel.findById(customerId)
             const customerCart = customerData.cart
             if (customerCart.length <= 0) {
+                productLogger.error("Cart is empty!")
                 return res.status(400).send({
                     success: false,
                     message: "Cart is empty!",
@@ -382,6 +419,7 @@ module.exports = {
                 const sellerData = await customerModel.findById(productData.userId)
                 pricePaid += productData.productPrice * element.quantity
                 if (pricePaid > customerData.accountBalance) {
+                    productLogger.error("Insufficient Balance!")
                     return res.status(400).send({
                         success: false,
                         message: "Insufficient Balance!",
@@ -399,11 +437,13 @@ module.exports = {
                 await sellerData.save()
                 await customerData.save()
             }
+            productLogger.info("Successfully Ordered All Product!")
             res.status(200).send({
                 success: true,
                 message: "Successfully Ordered All Product!",
             })
         } catch (error) {
+            productLogger.error(`Server Error: ${error.message}`)
             res.status(500).send({
                 success: false,
                 message: "Server error!",
