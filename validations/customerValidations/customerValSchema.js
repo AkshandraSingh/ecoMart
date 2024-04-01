@@ -46,9 +46,6 @@ const customerValSchema = {
         customerGender: joi
             .string()
             .required(),
-        customerProfilePic: joi
-            .string()
-            .required(),
         customerAddress: joi
             .string()
             .required(),
