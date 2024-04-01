@@ -2,13 +2,14 @@ const express = require('express')
 
 const productController = require('../controllers/productController')
 const productImageStorage = require('../../middleware/productImageStorage')
+const productValidator = require('../../validations/productValidations/productValidator')
 
 const productRouter = express.Router()
 
-productRouter.post('/addProduct/:userId', productController.addProduct)
-productRouter.post('/addToCart/:customerId/:productId', productController.addToCart)
-productRouter.post('/orderProduct/:customerId/:productId', productController.orderProduct)
-productRouter.post('/orderAllProduct/:customerId', productController.orderAllProduct)
+productRouter.post('/addProduct/:userId', productValidator.addProductValidation, productController.addProduct)
+productRouter.post('/addToCart/:customerId/:productId', productValidator.addToCartValidation, productController.addToCart)
+productRouter.post('/orderProduct/:customerId/:productId', productValidator.orderProductValidation, productController.orderProduct)
+productRouter.post('/orderAllProduct/:customerId', productValidator.orderAllProductValidation, productController.orderAllProduct)
 productRouter.get('/searchProduct/:productName', productController.searchProduct)
 productRouter.get('/viewCart/:customerId', productController.viewCart)
 productRouter.get('/emptyCart/:customerId', productController.emptyCart)

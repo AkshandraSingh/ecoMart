@@ -2,7 +2,7 @@ const joi = require('joi');
 const { joiPasswordExtendCore } = require('joi-password');
 const joiPassword = joi.extend(joiPasswordExtendCore);
 
-const userValSchema = {
+const customerValSchema = {
     signupCustomer: joi.object({
         customerName: joi
             .string()
@@ -137,4 +137,4 @@ const userValSchema = {
     })
 };
 
-module.exports = userValSchema;
+module.exports = customerValSchema;
